@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batalha Pokémon</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 0; background-color: #f0f0f0; }
+        #batalha {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 80vh;
+            justify-content: space-between;
+            padding: 20px;
+            position: relative;
+            background: url('https://th.bing.com/th/id/OIP.WFXy-dyZQA40ITTPtncOCQAAAA?rs=1&pid=ImgDetMain') no-repeat center center/cover;
+        }
+        .bolha {
+            background: linear-gradient(135deg, #ffffff 0%, #d4d4d4 100%);
+            padding: 15px;
+            border-radius: 20px;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid #bbb;
+            font-weight: bold;
+        }
+        .hp-bar {
+            width: 120px;
+            height: 20px;
+            background: lightgray;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+        .hp-bar div {
+            height: 100%;
+            background: green;
+            transition: width 0.3s;
+        }
+        .sprite {
+            width: 200px;
+            height: auto;
+            transition: transform 0.3s ease-in-out;
+        }
+        #inimigo-container {
+            position: absolute;
+            top: 15vh;
+            right: 10vw;
+        }
+        #jogador-container {
+            position: absolute;
+            bottom: 10vh;
+            left: 10vw;
+        }
+        #jogador-info {
+            position: absolute;
+            bottom: 30vh;
+            left: 10vw;
+        }
+        #inimigo-info {
+            position: absolute;
+            top: 5vh;
+            left: 10vw;
+        }
+        #jogador-info1 {
+            position: absolute;
+            top: 70vh;
+            right: 10vw;
+        }
+        #barra-ataques {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        .ataque, .pokebola {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .ataque { background-color: #ffcc00; }
+        .pokebola { background-color: #007bff; color: white; }
+        
+        @keyframes vibrar {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+
+        @keyframes atacar {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(30px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Batalha Pokémon</h1>
+    <div id="batalha">
+        <div id="inimigo-info" class="bolha">
+            <p>Pikachu</p>
+            <div class="hp-bar"><div id="hp-inimigo" style="width: 100%;"></div></div>
+        </div>
+        <div class="container" id="inimigo-container">
+            <img id="sprite-inimigo" src="https://img.pokemondb.net/sprites/black-white/anim/shiny/pikachu.gif" class="sprite" alt="Inimigo">
+        </div>
+        <div class="container" id="jogador-container">
+            <img id="sprite-jogador" src="https://img.pokemondb.net/sprites/black-white/anim/back-normal/gengar.gif" class="sprite" alt="Jogador">
+        </div>
+        <div id="jogador-info1" class="bolha">
+            <p>Gengar</p>
+            <div class="hp-bar"><div id="hp-jogador" style="width: 100%;"></div></div>
+        </div>
+    </div>
+    <div id="barra-ataques">
+        <button class="ataque" data-move="0">Golpe Rápido</button>
+        <button class="ataque" data-move="1">Investida</button>
+        <button class="ataque" data-move="2">Chama Ardente</button>
+        <button class="ataque" data-move="3">Raio Congelante</button>
+    </div>
+    <p id="mensagem"></p>
+
+    <script>
+        const hpInimigo = document.getElementById("hp-inimigo");
+        const hpJogador = document.getElementById("hp-jogador");
+        const mensagem = document.getElementById("mensagem");
+        const spriteJogador = document.getElementById("sprite-jogador");
+        const spriteInimigo = document.getElementById("sprite-inimigo");
+        const infoJogador = document.getElementById("jogador-info1");
+        const infoInimigo = document.getElementById("inimigo-info");
+
+        const pokemonJogador = {
+            nome: "Gengar",
+            hp: 100,
+            ataques: [
+                { nome: "Golpe Rápido", dano: 10 },
+                { nome: "Investida", dano: 20 },
+                { nome: "Chama Ardente", dano: 25 },
+                { nome: "Raio Congelante", dano: 30 },
+            ]
+        };
+
+        const pokemonInimigo = {
+            nome: "Pikachu",
+            hp: 100,
+            ataques: [
+                { nome: "Choque do Trovão", dano: 15 },
+                { nome: "Pancada", dano: 12 },
+                { nome: "Raio", dano: 20 }
+            ]
+        };
+
+        function atualizarHP() {
+            hpJogador.style.width = `${pokemonJogador.hp}%`;
+            hpInimigo.style.width = `${pokemonInimigo.hp}%`;
+        }
+
+        function atacar(index) {
+            let ataque = pokemonJogador.ataques[index];
+            spriteJogador.style.animation = "atacar 0.3s ease-in-out";
+            setTimeout(() => {
+                pokemonInimigo.hp -= ataque.dano;
+                mensagem.innerText = `${pokemonJogador.nome} usou ${ataque.nome}!`;
+                infoInimigo.style.animation = "vibrar 0.3s ease-in-out";
+                atualizarHP();
+                setTimeout(ataqueInimigo, 1000);
+            }, 300);
+        }
+
+        function ataqueInimigo() {
+            let ataque = pokemonInimigo.ataques[Math.floor(Math.random() * pokemonInimigo.ataques.length)];
+            spriteInimigo.style.animation = "atacar 0.3s ease-in-out";
+            setTimeout(() => {
+                pokemonJogador.hp -= ataque.dano;
+                mensagem.innerText = `${pokemonInimigo.nome} usou ${ataque.nome}!`;
+                infoJogador.style.animation = "vibrar 0.3s ease-in-out";
+                atualizarHP();
+            }, 300);
+        }
+
+        document.querySelectorAll(".ataque").forEach((btn, index) => {
+            btn.addEventListener("click", () => atacar(index));
+        });
+    </script>
+</body>
+</html>
