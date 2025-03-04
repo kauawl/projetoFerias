@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batalha Pokémon</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        #batalha {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 80vh;
+            justify-content: space-between;
+            padding: 20px;
+            position: relative;
+            background: url('https://th.bing.com/th/id/OIP.WFXy-dyZQA40ITTPtncOCQAAAA?rs=1&pid=ImgDetMain') no-repeat center center/cover;
+        }
+
+        .bolha {
+            background: rgba(241, 243, 241, 0.8);
+            padding: 15px;
+            border-radius: 25px;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .hp-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .hp-bar {
+            width: 100px;
+            height: 20px;
+            background: lightgray;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .hp-bar div {
+            height: 100%;
+            background: green;
+            transition: width 0.3s;
+        }
+
+        .pokemon-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sprite {
+            width: 200px;
+            height: auto;
+        }
+
+        #jogador-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            padding-left: 150px;
+        }
+
+        #inimigo-container {
+            position: absolute;
+            top: 250px;
+            right: 110px;
+        }
+
+        #gengar-container {
+            position: absolute;
+            bottom: 0px;
+            left: 70px;
+        }
+
+        #barra-ataques {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .ataque, .pokebola {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .ataque { background-color: #ffcc00; }
+        .pokebola { background-color: #007bff; color: rgb(231, 13, 13); }
+    </style>
+</head>
+<body>
+
+    <h1>Batalha Pokémon</h1>
+
+    <div id="batalha">
+        <!-- Inimigo (Pikachu) -->
+        <div class="container" id="inimigo-container">
+            <div class="pokemon-info">
+                <div class="bolha" style="position: absolute; bottom: 10px; right: 10px;">
+                    <p><strong>Pikachu</strong></p>
+                    <div class="hp-bar"><div id="hp-inimigo" style="width: 100%;"></div></div>
+                </div>
+            </div>
+            <div class="personagem-container">
+                <img src="https://img.pokemondb.net/sprites/black-white/anim/shiny/pikachu.gif" class="sprite" alt="Inimigo">
+            </div>
+        </div>
+
+        <div id="pokebola-animacao"></div>
+
+        <!-- Jogador (Gengar) -->
+        <div id="gengar-container">
+            <div class="personagem-container">
+                <img src="https://img.pokemondb.net/sprites/black-white/anim/back-normal/gengar.gif" class="sprite" alt="Jogador">
+            </div>
+            <div id="jogador-info" class="bolha" style="position: absolute; top: 10px; left: 10px;">
+                <p>Gengar</p>
+                <div class="hp-bar"><div id="hp-jogador" style="width: 100%;"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de Ataques -->
+    <div id="barra-ataques">
+        <button class="ataque" data-move="0">Golpe Rápido</button>
+        <button class="ataque" data-move="1">Investida</button>
+        <button class="ataque" data-move="2">Chama Ardente</button>
+        <button class="ataque" data-move="3">Raio Congelante</button>
+        <button class="pokebola" data-captura="0">Pokébola</button>
+        <button class="pokebola" data-captura="1">Great Ball</button>
+        <button class="pokebola" data-captura="2">Ultra Ball</button>
+    </div>
+
+    <p id="mensagem"></p>
+
+</body>
+</html>
