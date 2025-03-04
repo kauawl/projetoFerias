@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Estilo Pokémon GBA com Sprites</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden; /* Impede que o mapa ultrapasse a tela */
+        }
+
+        #mapa {
+            display: grid;
+            grid-template-columns: repeat(20, 50px); /* 20 colunas */
+            grid-template-rows: repeat(20, 50px);    /* 20 linhas */
+            gap: 0px;
+            position: relative;
+            background-color: #d3d3d3;
+            border: 2px solid #000;
+        }
+
+        .tile {
+            width: 50px;
+            height: 50px;
+            background-color: #c0c0c0;
+            border: 1px solid #fff;
+            background-size: cover; /* As imagens de fundo se ajustam ao tamanho do tile */
+        }
+
+        .player {
+            background-color: #ff0000; /* Jogador marcado com a cor vermelha */
+        }
+
+        .grass {
+            background-color: #6c9e2d; /* Cor do tile de grama */
+            background-image: url('https://example.com/sprite-grass.png'); /* Imagem de mato */
+        }
+
+        .path {
+            background-color: #b59e3e; /* Cor do tile de caminho */
+            background-image: url('https://example.com/sprite-path.png'); /* Imagem de caminho */
+        }
+
+        .house {
+            background-color: #8b4513; /* Cor do tile de casa (marrom) */
+            background-image: url('https://example.com/sprite-house.png'); /* Imagem de casa */
+        }
+
+        .tree {
+            background-color: #228B22; /* Cor de árvore */
+            background-image: url('https://example.com/sprite-tree.png'); /* Imagem de árvore */
+        }
+
+        .mountain {
+            background-color: #A9A9A9; /* Cor de montanha */
+            background-image: url('https://example.com/sprite-mountain.png'); /* Imagem de montanha */
+        }
+
+        /* Adiciona borda para a área do jogador */
+        .player {
+            border: 2px solid yellow;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="mapa"></div>
+
+<script>
+    // Criação do mapa com tiles
+    const mapaElement = document.getElementById('mapa');
+    const mapa = [];
+    const player = { x: 0, y: 0 };
+
+    const TILE_SIZE = 50;
+    const MAP_WIDTH = 20;  // 20 colunas
+    const MAP_HEIGHT = 20; // 20 linhas
+
+    // Função para criar o mapa de tiles
+    function criarMapa() {
+        for (let i = 0; i < MAP_HEIGHT; i++) {
+            const row = [];
+            for (let j = 0; j < MAP_WIDTH; j++) {
+                const tile = document.createElement('div');
+                tile.classList.add('tile');
+                
+                // Criando o tipo de tile de forma variada (caminho, casa, árvore, grama, montanha)
+                if (i === 0 || i === MAP_HEIGHT - 1 || j === 0 || j === MAP_WIDTH - 1) {
+                    tile.classList.add('house'); // Coloca casas nas bordas
+                } else if ((i + j) % 5 === 0) {
+                    tile.classList.add('tree'); // Coloca árvores em lugares aleatórios
+                } else if ((i + j) % 7 === 0) {
+                    tile.classList.add('mountain'); // Coloca montanhas
+                } else if ((i + j) % 4 === 0) {
+                    tile.classList.add('grass'); // Coloca mato em lugares aleatórios
+                } else {
+                    tile.classList.add('path'); // Coloca caminho nas áreas restantes
+                }
+
+                mapaElement.appendChild(tile);
+                row.push(tile);
+            }
+            mapa.push(row);
+        }
+        atualizarJogador();
+    }
+
+    // Função para atualizar a posição do jogador
+    function atualizarJogador() {
+        const jogadorTile = mapa[player.y][player.x];
+        jogadorTile.classList.add('player');
+    }
+
+    // Função para mover o jogador
+    function moverJogador(direcao) {
+        const jogadorTile = mapa[player.y][player.x];
+        jogadorTile.classList.remove('player');
+
+        if (direcao === 'up' && player.y > 0) player.y--;
+        if (direcao === 'down' && player.y < MAP_HEIGHT - 1) player.y++;
+        if (direcao === 'left' && player.x > 0) player.x--;
+        if (direcao === 'right' && player.x < MAP_WIDTH - 1) player.x++;
+
+        atualizarJogador();
+    }
+
+    // Detectar as teclas pressionadas para movimentar o jogador
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp') {
+            moverJogador('up');
+        } else if (e.key === 'ArrowDown') {
+            moverJogador('down');
+        } else if (e.key === 'ArrowLeft') {
+            moverJogador('left');
+        } else if (e.key === 'ArrowRight') {
+            moverJogador('right');
+        }
+    });
+
+    // Criar o mapa ao carregar a página
+    criarMapa();
+</script>
+
+</body>
+</html>
