@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Estilo Pokémon GBA com Personagem 2D (Imagem)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #mapa {
+            display: grid;
+            grid-template-columns: repeat(20, 50px); /* 20 colunas */
+            grid-template-rows: repeat(20, 50px);    /* 20 linhas */
+            gap: 0px;
+            position: relative;
+            background-color: #d3d3d3;
+            border: 2px solid #000;
+        }
+
+        .tile {
+            width: 50px;
+            height: 50px;
+            background-color: #c0c0c0;
+            border: 1px solid #fff;
+            background-size: cover;
+        }
+
+        /* Estilo do jogador (usando uma imagem 2D) */
+        .player {
+            width: 50px;  /* Largura da imagem */
+            height: 50px; /* Altura da imagem */
+            position: absolute;
+            background-size: cover;
+        }
+
+        .grass {
+            background-color: #6c9e2d; /* Cor do tile de grama */
+            background-image: url('https://e7.pngegg.com/pngimages/776/968/png-clipart-drawing-graphics-counter-strike-global-offensive-animated-bush-leaf-grass.png'); /* Insira o sprite da grama aqui */
+        }
+
+        .path {
+            background-color: #b59e3e; /* Cor do tile de caminho */
+            background-image: 
+        }
+
+        .house {
+         background-image: url('https://e7.pngegg.com/pngimages/591/931/png-clipart-house-pixel-art-drawing-roof-house-angle-property.png'); /* Corrigido */
+         }
+        .tree {
+            background-color: #228B22; /* Cor de árvore */
+            background-image: url('https://e7.pngegg.com/pngimages/348/1008/png-clipart-drawing-trees-cartoon-cartoon-tree-watercolor-painting-leaf.png'); /* Insira o sprite da árvore aqui */
+        }
+
+        .mountain {
+            background-color: #A9A9A9; /* Cor de montanha */
+            background-image: url('https://img.freepik.com/vetores-premium/pixel-art-desenho-animado-montanha-verde_41992-2192.jpg?semt=ais_hybrid'); /* Insira o sprite da montanha aqui */
+        }
+    </style>
+</head>
+<body>
+
+<div id="mapa"></div>
+
+<script>
+    // Criação do mapa com tiles
+    const mapaElement = document.getElementById('mapa');
+    const mapa = [];
+    const player = { x: 0, y: 0, direction: 'down' };  // Posição inicial do jogador e direção
+    let jogadorDiv;  // Referência para o ponto jogador (agora com imagem)
+    const TILE_SIZE = 50;
+    const MAP_WIDTH = 20;  // 20 colunas
+    const MAP_HEIGHT = 20; // 20 linhas
+
+    // Função para criar o mapa de tiles
+    function criarMapa() {
+        for (let i = 0; i < MAP_HEIGHT; i++) {
+            const row = [];
+            for (let j = 0; j < MAP_WIDTH; j++) {
+                const tile = document.createElement('div');
+                tile.classList.add('tile');
+                
+                // Criando o tipo de tile de forma variada (caminho, casa, árvore, grama, montanha)
+                if (i === 0 || i === MAP_HEIGHT - 1 || j === 0 || j === MAP_WIDTH - 1) {
+                    tile.classList.add('house'); // Coloca casas nas bordas
+                } else if ((i + j) % 5 === 0) {
+                    tile.classList.add('tree'); // Coloca árvores em lugares aleatórios
+                } else if ((i + j) % 7 === 0) {
+                    tile.classList.add('mountain'); // Coloca montanhas
+                } else if ((i + j) % 4 === 0) {
+                    tile.classList.add('grass'); // Coloca mato em lugares aleatórios
+                } else {
+                    tile.classList.add('path'); // Coloca caminho nas áreas restantes
+                }
+
+                mapaElement.appendChild(tile);
+                row.push(tile);
+            }
+            mapa.push(row);
+        }
+
+        // Garantir que o jogador nasça em um caminho
+        garantirPosicaoJogador();
+        atualizarJogador();
+    }
+
+    // Função para garantir que o jogador nasça em um tile de caminho
+    function garantirPosicaoJogador() {
+        let posX, posY;
+        do {
+            posX = Math.floor(Math.random() * MAP_WIDTH);
+            posY = Math.floor(Math.random() * MAP_HEIGHT);
+        } while (!mapa[posY][posX].classList.contains('path')); // Verifica se o tile é um caminho
+
+        player.x = posX;
+        player.y = posY;
+    }
+
+    // Função para atualizar a posição do jogador (agora com imagem)
+    function atualizarJogador() {
+        // Se o ponto já existe, removê-lo do mapa
+        if (jogadorDiv) {
+            jogadorDiv.remove();
+        }
+
+        // Cria a div do jogador com a imagem (muda a direção com base no movimento)
+        jogadorDiv = document.createElement('div');
+        jogadorDiv.classList.add('player');
+        
+        // Define a posição do jogador
+        jogadorDiv.style.top = `${player.y * TILE_SIZE}px`; // Posição Y
+        jogadorDiv.style.left = `${player.x * TILE_SIZE}px`; // Posição X
+
+        // Define a imagem do jogador com base na direção
+        if (player.direction === 'up') {
+            jogadorDiv.style.backgroundImage = 'url("https://img.pokemondb.net/sprites/black-white/anim/back-normal/bulbasaur.gif")'; // Imagem para a direção 'cima'
+        } else if (player.direction === 'down') {
+            jogadorDiv.style.backgroundImage = 'url("https://img.pokemondb.net/sprites/black-white/anim/normal/bulbasaur.gif")'; // Imagem para a direção 'baixo'
+        } else if (player.direction === 'left') {
+            jogadorDiv.style.backgroundImage = 'url("https://img.pokemondb.net/sprites/lets-go-pikachu-eevee/normal/bulbasaur.png")'; // Imagem para a direção 'esquerda'
+        } else if (player.direction === 'right') {
+            jogadorDiv.style.backgroundImage = 'url("https://img.pokemondb.net/sprites/lets-go-pikachu-eevee/normal/bulbasaur.png")'; // Imagem para a direção 'direita'
+        }
+
+        // Adiciona o ponto preto como jogador
+        mapaElement.appendChild(jogadorDiv);
+    }
+
+    // Função para mover o jogador
+    function moverJogador(direcao) {
+        let newX = player.x;
+        let newY = player.y;
+
+        // Determinar nova posição com base na direção
+        if (direcao === 'up' && player.y > 0) {
+            newY--;
+        }
+        if (direcao === 'down' && player.y < MAP_HEIGHT - 1) {
+            newY++;
+        }
+        if (direcao === 'left' && player.x > 0) {
+            newX--;
+        }
+        if (direcao === 'right' && player.x < MAP_WIDTH - 1) {
+            newX++;
+        }
+
+        // Verifica se o tile de destino é um caminho antes de mover
+        const destinoTile = mapa[newY][newX];
+        if (destinoTile.classList.contains('path')) {
+            player.x = newX;
+            player.y = newY;
+            player.direction = direcao; // Atualiza a direção ao mover
+        }
+
+        // Atualiza a posição do jogador
+        atualizarJogador();
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp') {
+            moverJogador('up');
+        } else if (e.key === 'ArrowDown') {
+            moverJogador('down');
+        } else if (e.key === 'ArrowLeft') {
+            moverJogador('left');
+        } else if (e.key === 'ArrowRight') {
+            moverJogador('right');
+        }
+    });
+
+    criarMapa();
+</script>
+
+</body>
+</html>
